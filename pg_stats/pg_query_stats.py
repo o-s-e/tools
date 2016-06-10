@@ -10,10 +10,10 @@ from datetime import datetime, timedelta
 from operator import itemgetter
 
 # RDS settings
-rds_host = "vapondem01db001.ceg1kctzk81j.us-east-1.rds.amazonaws.com"
-db_user = "postgres"
-password = "sKc08Z9VJaCmuzFb0adv"
-db_name = "ngdb_5_7_0_187"
+rds_host = "*****"
+db_user = "******"
+password = "********"
+db_name = "********"
 port = 5432
 
 logging.basicConfig(level=logging.INFO)
