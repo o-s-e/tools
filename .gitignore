@@ -48,3 +48,8 @@ Temporary Items
 .idea/
 psycopg2-2.6.1.dist-info/
 psycopg2/
+nameko/service_env/Include/
+nameko/service_env/Lib/
+nameko/service_env/Scripts/
+nameko/service_env/pip-selfcheck.json
+nameko/api_env/Scripts/
