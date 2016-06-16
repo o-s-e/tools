@@ -12,12 +12,12 @@ S3_BUCKET_NAME = "recommind-logs"
 TIMEZONE = ""
 
 #################################################
-### ELB access log format keys
+### S3 access log format keys
 S3_KEYS = ["owner_id", "bucket", "@timestamp", "client_ip", "requester", "request_id", "operation",
            "key", "request_uri", "http_status_code", "error_code",
            "bytes_send", "object_size", "total_time", "turn_around_time", "referrer", "user_agent", "version_id"]
 
-### ELB access log format regex
+### S3 access log format regex
 S3_REGEX = '(\S+) (\S+) \[(.*?)\] (\S+) (\S+) (\S+) (\S+) (\S+) "([^"]+)" (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) "([' \
            '^"]+)" "([^"]+)"'
 
