@@ -15,7 +15,7 @@ from botocore import exceptions as Botoxeption
 
 ##################################################
 # Elasticsearch host name
-ES_HOST = "172.31.38.225"
+ES_HOST = "search-logging-6osjscomfvnhvucoql45mga4ly.eu-west-1.es.amazonaws.com"
 
 # Elasticsearch prefix for index name
 INDEX_PREFIX = "s3_access_log"
@@ -61,7 +61,9 @@ def lambda_handler(event, context):
     except Botoxeption.ClientError as e:
         logger.error('something got wrong: {}'.format(str(e)))
 
+    logger.info('extract body')
     body = obj["Body"].read()
+    logger.debug('extracted body: {}'.format(str(body)))
     data = ""
 
     for line in body.strip().split("\n"):
