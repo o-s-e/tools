@@ -1,25 +1,25 @@
 ##################################################
 ### Elasticsearch host name
-ES_HOST = "search-******************.ap-northeast-1.es.amazonaws.com"
+ES_HOST = "ec2-54-246-174-89.eu-west-1.compute.amazonaws.com"
 
 ### Elasticsearch prefix for index name
 INDEX_PREFIX = "s3_access_log"
 
 ### ELB name for type name
-S3_BUCKET_NAME = "*****"
+S3_BUCKET_NAME = "recommind-logs"
 
 ### Enabled to change timezone. If you set UTC, this parameter is blank
 TIMEZONE = ""
 
 #################################################
 ### ELB access log format keys
-S3_KEYS = ["@timestamp", "elb", "client_ip", "client_port", "backend_ip", "backend_port", "request_processing_time",
-            "backend_processing_time", "response_processing_time", "elb_status_code", "backend_status_code",
-            "received_bytes", "sent_bytes", "request_method", "request_url", "request_version", "user_agent"]
+S3_KEYS = ["owner_id", "bucket", "@timestamp", "client_ip", "requester", "request_id", "operation",
+           "key", "request_uri", "http_status_code", "error_code",
+           "bytes_send", "object_size", "total_time", "turn_around_time", "referrer", "user_agent", "version_id"]
 
 ### ELB access log format regex
-S3_REGEX = '^(.[^ ]+) (.[^ ]+) (.[^ ]+):(\\d+) (.[^ ]+):(\\d+) (.[^ ]+) (.[^ ]+) (.[^ ]+) (.[^ ]+) (.[^ ]+) (\\d+) (' \
-            '\\d+) \"(\\w+) (.[^ ]+) (.[^ ]+)\" \"(.+)\"'
+S3_REGEX = '(\S+) (\S+) \[(.*?)\] (\S+) (\S+) (\S+) (\S+) (\S+) "([^"]+)" (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) "([' \
+           '^"]+)" "([^"]+)"'
 
 #################################################
 
