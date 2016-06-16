@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import boto3
 import re
 import os
@@ -13,13 +15,13 @@ from botocore import exceptions as Botoxeption
 
 ##################################################
 # Elasticsearch host name
-ES_HOST = "ec2-54-246-174-89.eu-west-1.compute.amazonaws.com"
+ES_HOST = "172.31.38.225"
 
 # Elasticsearch prefix for index name
 INDEX_PREFIX = "s3_access_log"
 
 # ELB name for type name
-S3_BUCKET_NAME = "recommind-logs"
+S3_BUCKET_NAME = "osetest-logs"
 
 # Enabled to change timezone. If you set UTC, this parameter is blank
 TIMEZONE = ""
@@ -47,19 +49,16 @@ TYPE = S3_BUCKET_NAME
 def lambda_handler(event, context):
     bucket = event["Records"][0]["s3"]["bucket"]["name"]
     key = event["Records"][0]["s3"]["object"]["key"]
-    logger.info('got event{} for key {}'.format(str(event), str(key)))
+    logger.info('lalala got event{} for key {}'.format(json.dumps(event, indent=2), str(key)))
 
     try:
+        logger.info('Get the s3 object: {}'.format(str(key)))
         s3 = boto3.client("s3")
         obj = s3.get_object(
             Bucket=bucket,
             Key=key
         )
     except Botoxeption.ClientError as e:
-        logger.error('Some context info: Memory limit= {} - Remaining time = {}'.format(
-            str(context.memory_limit_in_mb),
-            str(context.get_remaining_time_in_millis()))
-        )
         logger.error('something got wrong: {}'.format(str(e)))
 
     body = obj["Body"].read()
@@ -85,16 +84,17 @@ def lambda_handler(event, context):
             data = ""
 
     if data:
-        print data
+        print(data)
         _bulk(ES_HOST, data)
 
 
 def _bulk(host, doc):
     credentials = _get_credentials()
     url = _create_url(host, "/_bulk")
+    logger.info('ingest to es: {}'.format(str(url)))
     response = es_request(url, "POST", credentials, data=doc)
     if not response.ok:
-        print response.text
+        logger.error('Response Error: {}'.format(str(response.text)))
 
 
 def _get_credentials():
