@@ -40,7 +40,7 @@ FMT_OUT = '%Y-%m-%dT%H:%M:%S'
 #################################################
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 R = re.compile(S3_REGEX)
 INDEX = INDEX_PREFIX + "-" + datetime.strftime(datetime.now(), "%Y.%m.%d")

@@ -19,54 +19,43 @@
         },
         "bucket": {
           "type": "string",
-          "index": "not_analysed"
+          "index": "not_analyzed"
         },
         "client_ip": {
           "type": "ip"
         },
         "owner_id": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "requester": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "request_id": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "request_uri": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "referrer": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "error_code": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "http_status_code": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "operation": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "user_agent": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "version_id": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "key": {
-          "type": "string",
-          "index": "not_analysed"
+          "type": "string"
         },
         "total_time": {
           "type": "long"
