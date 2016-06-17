@@ -5,7 +5,7 @@ import re
 import os
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, date
 from dateutil import parser, tz, zoneinfo
 from botocore.awsrequest import AWSRequest
 from botocore.auth import SigV4Auth
@@ -23,18 +23,18 @@ INDEX_PREFIX = "s3_access_log"
 # ELB name for type name
 S3_BUCKET_NAME = "osetest-logs"
 
-# Enabled to change timezone. If you set UTC, this parameter is blank
-TIMEZONE = ""
-
 #################################################
 # S3 access log format keys
-S3_KEYS = ["owner_id", "bucket", "@timestamp", "client_ip", "requester", "request_id", "operation",
+S3_KEYS = ["owner_id", "bucket", "_timestamp", "client_ip", "requester", "request_id", "operation",
            "key", "request_uri", "http_status_code", "error_code",
            "bytes_send", "object_size", "total_time", "turn_around_time", "referrer", "user_agent", "version_id"]
 
 # S3 access log format regex
-S3_REGEX = '(\S+) (\S+) \[(.*?)\] (\S+) (\S+) (\S+) (\S+) (\S+) "([^"]+)" (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) "([' \
-           '^"]+)" "([^"]+)"'
+S3_REGEX = '(\S+) (\S+) \[(.*?)\s\+0000\] (\S+) (\S+) (\S+) (\S+) (\S+) "([^"]+)" (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) ' \
+           '"([^"]+)" "([^"]+)" (\S+)'
+
+FMT_IN = '%d/%b/%Y:%H:%M:%S'
+FMT_OUT = '%Y-%m-%d %H:%M:%S'
 
 #################################################
 
@@ -42,14 +42,14 @@ logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 R = re.compile(S3_REGEX)
-INDEX = INDEX_PREFIX + "-" + datetime.strftime(datetime.now(), "%Y%m%d")
+INDEX = INDEX_PREFIX + "-" + datetime.strftime(datetime.now(), "%Y.%m.%d")
 TYPE = S3_BUCKET_NAME
 
 
 def lambda_handler(event, context):
     bucket = event["Records"][0]["s3"]["bucket"]["name"]
     key = event["Records"][0]["s3"]["object"]["key"]
-    logger.info('lalala got event{} for key {}'.format(json.dumps(event, indent=2), str(key)))
+    logger.debug('Got event{} for key {}'.format(json.dumps(event, indent=2), str(key)))
 
     try:
         logger.info('Get the s3 object: {}'.format(str(key)))
@@ -63,30 +63,28 @@ def lambda_handler(event, context):
 
     logger.info('extract body')
     body = obj["Body"].read()
-    logger.debug('extracted body: {}'.format(str(body)))
     data = ""
 
     for line in body.strip().split("\n"):
-        logger.debug('line: {}'.format(str(line)))
         match = R.match(line)
-        logger.debug('match: {}'.format(str(match)))
         if not match:
+            logger.error('no match for: {}'.format(str(line)))
             continue
 
         values = match.groups(0)
         doc = dict(zip(S3_KEYS, values))
-        if TIMEZONE:
-            doc[S3_KEYS[0]] = parser.parse(doc[S3_KEYS[0]]).replace(tzinfo=tz.tzutc()).astimezone(
-                zoneinfo.gettz(TIMEZONE)).isoformat()
+
+        doc[S3_KEYS[2]] = transform_timestamp(doc[S3_KEYS[2]])
+
         data += '{"index":{"_index":"' + INDEX + '","_type":"' + TYPE + '"}}\n'
         data += json.dumps(doc) + "\n"
+        logger.debug('a json doc in all its glory: {}'.format(str(json.dumps(doc))))
 
         if len(data) > 1000000:
             _bulk(ES_HOST, data)
             data = ""
 
     if data:
-        print(data)
         _bulk(ES_HOST, data)
 
 
@@ -97,6 +95,11 @@ def _bulk(host, doc):
     response = es_request(url, "POST", credentials, data=doc)
     if not response.ok:
         logger.error('Response Error: {}'.format(str(response.text)))
+
+
+def transform_timestamp(timestamp):
+    d = datetime.strptime(timestamp, FMT_IN)
+    return date.strftime(d, FMT_OUT)
 
 
 def _get_credentials():
