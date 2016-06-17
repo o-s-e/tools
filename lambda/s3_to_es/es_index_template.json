@@ -1,0 +1,27 @@
+{
+    "template": "s3_access_log-*",
+    "order": 1,
+    "settings": {
+        "index": {
+            "refresh_interval": "5s"
+        }
+    },
+    "mappings": {
+        "S3": {
+            "_timestamp": {
+                "enabled": true,
+                "stored": true,
+                "path": "@timestamp"
+            },
+            "properties": {
+                "@timestamp": {
+                    "type": "date"
+                },
+                "bucket": {
+                    "type": "string",
+                    "index": "not_analysed"
+                }
+            }
+        }
+    }
+}
