@@ -27,11 +27,6 @@ S3_KEYS = ["owner_id", "bucket", "_timestamp", "client_ip", "requester", "reques
 
 # S3 access log format regex
 S3_REGEX = '(\S+) (\S+) \[(.*?)\s\+0000\] (\S+) (\S+) (\S+) (\S+) (\S+) "([^"]+)" (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) ' \
-           '' \
-           '' \
-           '' \
-           '' \
-           '' \
            '"([^"]+)" "([^"]+)" (\S+)'
 
 FMT_IN = '%d/%b/%Y:%H:%M:%S'
