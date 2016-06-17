@@ -6,7 +6,6 @@ import os
 import json
 import logging
 from datetime import datetime, date
-from dateutil import parser, tz, zoneinfo
 from botocore.awsrequest import AWSRequest
 from botocore.auth import SigV4Auth
 from botocore.endpoint import PreserveAuthSession
@@ -20,9 +19,6 @@ ES_HOST = "search-logging-6osjscomfvnhvucoql45mga4ly.eu-west-1.es.amazonaws.com"
 # Elasticsearch prefix for index name
 INDEX_PREFIX = "s3_access_log"
 
-# ELB name for type name
-S3_BUCKET_NAME = "osetest-logs"
-
 #################################################
 # S3 access log format keys
 S3_KEYS = ["owner_id", "bucket", "_timestamp", "client_ip", "requester", "request_id", "operation",
@@ -31,10 +27,15 @@ S3_KEYS = ["owner_id", "bucket", "_timestamp", "client_ip", "requester", "reques
 
 # S3 access log format regex
 S3_REGEX = '(\S+) (\S+) \[(.*?)\s\+0000\] (\S+) (\S+) (\S+) (\S+) (\S+) "([^"]+)" (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) ' \
+           '' \
+           '' \
+           '' \
+           '' \
+           '' \
            '"([^"]+)" "([^"]+)" (\S+)'
 
 FMT_IN = '%d/%b/%Y:%H:%M:%S'
-FMT_OUT = '%Y-%m-%d %H:%M:%S'
+FMT_OUT = '%Y-%m-%dT%H:%M:%S'
 
 #################################################
 
@@ -43,7 +44,7 @@ logger.setLevel(logging.DEBUG)
 
 R = re.compile(S3_REGEX)
 INDEX = INDEX_PREFIX + "-" + datetime.strftime(datetime.now(), "%Y.%m.%d")
-TYPE = S3_BUCKET_NAME
+TYPE = 'S3'
 
 
 def lambda_handler(event, context):
@@ -91,8 +92,8 @@ def lambda_handler(event, context):
 def _bulk(host, doc):
     credentials = _get_credentials()
     url = _create_url(host, "/_bulk")
-    logger.info('ingest to es: {}'.format(str(url)))
     response = es_request(url, "POST", credentials, data=doc)
+    logger.info('ingest to es: {}'.format(str(response.text)))
     if not response.ok:
         logger.error('Response Error: {}'.format(str(response.text)))
 
