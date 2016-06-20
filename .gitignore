@@ -53,3 +53,4 @@ nameko/service_env/Lib/
 nameko/service_env/Scripts/
 nameko/service_env/pip-selfcheck.json
 nameko/api_env/Scripts/
+lambda/s3_to_es/Scripts/
