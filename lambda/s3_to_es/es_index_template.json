@@ -8,11 +8,6 @@
   },
   "mappings": {
     "S3": {
-      "_timestamp": {
-        "enabled": true,
-        "stored": true,
-        "path": "@timestamp"
-      },
       "properties": {
         "@timestamp": {
           "type": "date"

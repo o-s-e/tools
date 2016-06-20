@@ -21,7 +21,7 @@ INDEX_PREFIX = "s3_access_log"
 
 #################################################
 # S3 access log format keys
-S3_KEYS = ["owner_id", "bucket", "_timestamp", "client_ip", "requester", "request_id", "operation",
+S3_KEYS = ["owner_id", "bucket", "timestamp", "client_ip", "requester", "request_id", "operation",
            "key", "request_uri", "http_status_code", "error_code",
            "bytes_send", "object_size", "total_time", "turn_around_time", "referrer", "user_agent", "version_id"]
 
