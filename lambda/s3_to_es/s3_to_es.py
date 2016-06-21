@@ -14,7 +14,7 @@ from botocore import exceptions as Botoxeption
 
 ##################################################
 # Elasticsearch host name
-ES_HOST = "search-logging-6osjscomfvnhvucoql45mga4ly.eu-west-1.es.amazonaws.com"
+ES_HOST = "172.31.38.225:9200"
 
 # Elasticsearch prefix for index name
 INDEX_PREFIX = "s3_access_log"
@@ -26,8 +26,10 @@ S3_KEYS = ["owner_id", "bucket", "timestamp", "client_ip", "requester", "request
            "bytes_send", "object_size", "total_time", "turn_around_time", "referrer", "user_agent", "version_id"]
 
 # S3 access log format regex
-S3_REGEX = '(\S+) (\S+) \[(.*?)\s\+0000\] (\S+) (\S+) (\S+) (\S+) (\S+) "([^"]+)" (\S+) (\S+) (\S+) (\S+) (\S+) (\S+) ' \
-           '"([^"]+)" "([^"]+)" (\S+)'
+S3_REGEX = '(\S+) (\S+) \[(.*?)\s\+0000\] (\S+) (\S+) ' \
+           r'(\S+) (\S+) (\S+) "([^"]+)" ' \
+           r'(\S+) (\S+) (\S+) (\S+) (\S+) (\S+) ' \
+           r'"([^"]+)" "([^"]+)"'
 
 FMT_IN = '%d/%b/%Y:%H:%M:%S'
 FMT_OUT = '%Y-%m-%dT%H:%M:%S'
@@ -71,6 +73,13 @@ def lambda_handler(event, context):
         doc = dict(zip(S3_KEYS, values))
 
         doc[S3_KEYS[2]] = transform_timestamp(doc[S3_KEYS[2]])
+
+        # to avoid any type parsing errors for number fields in ES, let's change '-' to 0
+        for key, value in doc.iteritems():
+            if key in ["bytes_send", "object_size", "total_time", "turn_around_time"]:
+                if value == '-':
+                    logger.debug('Found \'-\' for key: {}, replacing with 0'.format(key))
+                    doc[key] = '0'
 
         data += '{"index":{"_index":"' + INDEX + '","_type":"' + TYPE + '"}}\n'
         data += json.dumps(doc) + "\n"
