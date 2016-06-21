@@ -2,8 +2,11 @@
   "template": "s3_access_log-*",
   "order": 1,
   "settings": {
+    "number_of_shards" : 1,
+    "number_of_replicas" : 0,
     "index": {
-      "refresh_interval": "1s"
+      "refresh_interval": "1s",
+      "store" : { "compress" : { "stored" : true, "tv":true}}
     }
   },
   "mappings": {
@@ -79,5 +82,3 @@
     }
   }
 }
-
-
